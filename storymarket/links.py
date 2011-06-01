@@ -33,10 +33,11 @@ class LinkedResource(base.Resource):
     def _add_details(self, info):
         # Create self.links, and also remove info.links so that
         # it doesn't overwrite our new version..
-        self.links = {}
-        for link in info.pop('links', []):
-            link_obj = Link(rel=link['rel'], href=link['href'],
-                            allowed_methods=link['allowed_methods'])
-            self.links[link['rel']] = link_obj
+        if 'links' in info.keys():
+            self.links = {}
+            for link in info.pop('links', []):
+                link_obj = Link(rel=link['rel'], href=link['href'],
+                                allowed_methods=link['allowed_methods'])
+                self.links[link['rel']] = link_obj
         super(LinkedResource, self)._add_details(info)
     
