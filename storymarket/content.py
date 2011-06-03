@@ -3,6 +3,7 @@ API classes for content (text, data, autdio, video, packages) resources.
 """
 
 from __future__ import absolute_import
+from os import path
 
 import poster.encode
 from . import base
@@ -224,7 +225,7 @@ class BinaryContentManager(ContentManager):
     # An injection point so that tests can generate a predictable MIME boundary.
     # End-user code should never touch this.
     _multipart_boundary = None
-    
+        
     def upload_blob(self, resource, blob):
         """
         Upload a new blob for a given resource.
@@ -234,7 +235,10 @@ class BinaryContentManager(ContentManager):
         :rtype: None
         """
         url = '/content/%s/%s/blob/' % (self.urlbit, base.getid(resource))
-        datagen, headers = poster.encode.multipart_encode({'blob': blob}, self._multipart_boundary)
+        file_field = resource.__class__.__name__.lower()
+        filename = path.basename(getattr(resource, file_field))
+        paramBlob = poster.encode.MultipartParam('blob', fileobj=blob, filename=filename)
+        datagen, headers = poster.encode.multipart_encode([paramBlob], self._multipart_boundary)
         # poster sets the Content-Length header to an int, breaking httplib2.
         headers['Content-Length'] = str(headers['Content-Length'])
         return self.api.client.put(url, body="".join(datagen), headers=headers)
