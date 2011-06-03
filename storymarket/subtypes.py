@@ -49,6 +49,9 @@ class SubtypeManager(base.Manager):
             params.update(is_default=is_default_coerced)
         return self._list('/content/%s/?%s' % (self.urlbit, urlencode(params)))
 
+    def default(self, type):
+        return self.filter(type=type, is_default=True)[0]
+            
     def get(self, resource):
         """
         Get an individual subtype.
