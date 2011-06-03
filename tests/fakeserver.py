@@ -47,7 +47,7 @@ class FakeClient(StorymarketClient):
         
         # Call the method
         munged_url = url.strip('/').replace('/', '_').replace('.', '_').split('_?')[0]
-        print munged_url
+
         qs = url.split('?')[-1]
         url_args = dict(parse_qsl(qs))
         kwargs.update(url_args)
